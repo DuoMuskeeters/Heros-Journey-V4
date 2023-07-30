@@ -1,0 +1,16 @@
+{
+    "name": "Mehmet",
+    "Level": 1,
+    "HP": 210,
+    "max_hp": 210,
+    "max_sp": 105,
+    "SP": 105,
+    "ATK": 44,
+    "ATKRATE": 1.55,
+    "HP_reg": 6.1,
+    "SP_reg": 3.05,
+    "Strenght": 12,
+    "Agility": 11,
+    "Intelligence": 11,
+    "Constitution": 11
+}
