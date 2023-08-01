@@ -1,11 +1,11 @@
 from Karakter import *
 from Ekran import *
+from Tower import *
 import random
 
 
 #karakter = Karakter_tanimlama("Mehmet.json")
 clear_console()
-mob = random_mob()
 
 
 def dodge(rate1: float, rate2: float):
@@ -33,7 +33,7 @@ def warrior(attacker : Character):
     else:
         return attacker.ATK
 
-def Savas_Mekanigi(karakter: Character, mob: Character):
+def Savas_Mekanigi(karakter: Character, mob: Mob):
     karakter = Warrior.from_character(karakter)
     players = [karakter, mob]
     turn=0 
@@ -55,7 +55,65 @@ def Savas_Mekanigi(karakter: Character, mob: Character):
                 attacker.HP = min(attacker.max_hp, attacker.HP + HP_reg)
                 attacker.SP = min(attacker.max_sp, attacker.SP + SP_reg) 
         if defender.HP == 0:
-            print(f"{defender.name} {attacker.name} tarafından katledildi")
+            print(f"{defender.name} {attacker.name} tarafından katledildi\n")
             break
         turn = 1 - turn  
         input()
+    #Savas sonucu
+    if karakter.HP == 0:
+        return False
+    if mob.HP == 0:
+        return True
+    
+def fight(karakter : Character , mob : Mob):
+    Sonuc= Savas_Mekanigi(karakter, mob)
+    if not Sonuc :
+        print("Öldün.")
+    else:
+        karakter.exp = karakter.exp + mob_exp_kazancı(mob.Level)
+
+
+def zindana_giris(karakter : Character, zindan : tower):
+    input("Zindana doğru yürüyorsun içerisi tehlikelerle dolu dikkatli ol")
+    kat = zindan.zindan_tanimlama(karakter.Level)
+    input(f"Şu anki seviyen {karakter.Level}, {kat}. kata doğru ilerliyorsun.\n")
+    while True:
+        karakter.level_up()
+        karakter.update_Stat()
+        exit = input("")
+        if exit == 'z':
+            break
+        mob= random_mob(kat)
+        print(f"Karşına {mob.name} çıktı.")
+        fight(karakter, mob)
+        input("Yürümeye devam ettin.")
+
+
+def MOB_Mekanigi(karakter: Mob, mob: Mob):
+    players = [karakter, mob]
+    turn=0 
+    
+    while True:
+        attacker = players[turn]
+        defender = players[1-turn]
+        dodge_rate = dodge(defender.ATKRATE, attacker.ATKRATE)
+        HP_reg = int(attacker.HP_reg * attacker.HP)/100
+        SP_reg = int(attacker.SP_reg * attacker.SP)/100
+        if dodge_rate >= random.random():
+            print(f"{attacker.name} saldırısı {defender.name} tarafından dodgelandı. ")
+        else:        
+                defender.HP = max(0, defender.HP - attacker.ATK)
+                print(f"{attacker.name} {defender.name}a {attacker.ATK} hasar verdi")
+                print(f"{defender.name} canı {defender.HP} ")
+                attacker.HP = min(attacker.max_hp, attacker.HP + int(HP_reg))
+                attacker.SP = min(attacker.max_sp, attacker.SP + int(SP_reg)) 
+        if defender.HP == 0:
+            print(f"{defender.name} {attacker.name} tarafından katledildi\n")
+            break
+        turn = 1 - turn  
+        input()
+    #Savas sonucu
+    if karakter.HP == 0:
+        return False
+    if mob.HP == 0:
+        return True
