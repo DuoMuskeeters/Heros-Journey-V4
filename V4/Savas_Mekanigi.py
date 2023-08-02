@@ -2,10 +2,8 @@ from Karakter import *
 from Ekran import *
 from Tower import *
 import random
+import time
 
-
-#karakter = Karakter_tanimlama("Mehmet.json")
-clear_console()
 
 
 def dodge(rate1: float, rate2: float):
@@ -28,10 +26,9 @@ def warrior(attacker : Character):
             print(f"{attacker.name} karakterinin güncellenmiş HP değeri: {attacker.HP}")
             print(f"{attacker.name} karakterinin güncellenmiş SP değeri: {attacker.SP}")
             return 0
-        else :
-            return attacker.ATK
-    else:
-        return attacker.ATK
+        elif warrior_q.lower() == "b":
+            return False
+    return attacker.ATK
 
 def Savas_Mekanigi(karakter: Character, mob: Mob):
     karakter = Warrior.from_character(karakter)
@@ -53,25 +50,30 @@ def Savas_Mekanigi(karakter: Character, mob: Mob):
                 print(f"{attacker.name} {defender.name}a {damage} hasar verdi")
                 print(f"{defender.name} canı {defender.HP} ")
                 attacker.HP = min(attacker.max_hp, attacker.HP + HP_reg)
-                attacker.SP = min(attacker.max_sp, attacker.SP + SP_reg) 
+                attacker.SP = min(attacker.max_sp, attacker.SP + SP_reg)
+            elif damage == False:
+                break 
         if defender.HP == 0:
             print(f"{defender.name} {attacker.name} tarafından katledildi\n")
             break
         turn = 1 - turn  
         input()
-    #Savas sonucu
-    if karakter.HP == 0:
-        return False
-    if mob.HP == 0:
-        return True
     
-def fight(karakter : Character , mob : Mob):
-    Sonuc= Savas_Mekanigi(karakter, mob)
-    if not Sonuc :
-        print("Öldün.")
-    else:
-        karakter.exp = karakter.exp + mob_exp_kazancı(mob.Level)
 
+def fight(karakter : Character , mob : Mob):
+    Savas_Mekanigi(karakter, mob)
+    if karakter.HP == 0 :
+        print("Öldün.")
+        karakter.exp = karakter.exp * 0.75
+        return False
+    else:
+        if mob.HP == 0 :
+            karakter.exp = karakter.exp + mob_exp_kazancı(mob.Level)
+            return True
+        #kacma
+        else:
+            return karakter
+        
 
 def zindana_giris(karakter : Character, zindan : tower):
     input("Zindana doğru yürüyorsun içerisi tehlikelerle dolu dikkatli ol")
@@ -85,8 +87,15 @@ def zindana_giris(karakter : Character, zindan : tower):
             break
         mob= random_mob(kat)
         print(f"Karşına {mob.name} çıktı.")
-        fight(karakter, mob)
-        input("Yürümeye devam ettin.")
+        sonuc = fight(karakter, mob)
+        if sonuc == False:
+            print("Yeniden Doğuyorsun.")
+            time.sleep(13)
+            print("Yeniden doğdun.")
+        elif sonuc == True:
+            input("Yürümeye devam ettin.")
+        
+
 
 
 def MOB_Mekanigi(karakter: Mob, mob: Mob):

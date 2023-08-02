@@ -14,7 +14,7 @@ def check_in(kontrol):
             with open(f"{dosya_adi}.json" , "r") as file:
                 your_character= json.load(file, object_hook=lambda d: SimpleNamespace(**d))
             return your_character
-    
+
         else:    
                 your_character = create_character()
                 return your_character

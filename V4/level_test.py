@@ -1,7 +1,8 @@
-import Karakter
+from Karakter import * 
 
 base_xp = 100
 n1 = 1.25
 
-for level in range(0, 10):
-    print(int(base_xp *(n1**level)))
+for sayi in range(0, 40):
+    oran = level(sayi)/mob_exp_kazancı(sayi)
+    print(oran)

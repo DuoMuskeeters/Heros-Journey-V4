@@ -175,13 +175,16 @@ def create_character():
     character_data = character.get_info()
     return character_data
 
+#zorluk exponanasiyel arttigi icin bu algoritma 35-40 seviye arasina kadar ise yarar.
 def level(level :int, n1 = 1.2, base_xp = 100):
+    n1 = n1 + (0.002) * int(level)
     gereken_exp = base_xp * (n1**level)
     gereken_exp = round(gereken_exp /5) *5
     return gereken_exp
 
-def mob_exp_kazancı(mob_level):
-    mob_exp = level(mob_level,1.2,50)
+def mob_exp_kazancı(mob_level, n1= 1.2, base_exp= 50):
+    mob_exp = base_exp * (n1**mob_level)
+    mob_exp = round(mob_exp /5) *5
     return mob_exp
     
 def Karakter_write(character_data):
