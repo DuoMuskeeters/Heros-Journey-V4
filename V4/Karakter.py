@@ -1,21 +1,31 @@
 from types import SimpleNamespace
-from Ekran import *
 import json
 import random
+import os
 
 
-def Karakter_read(karakter):
-    with open(karakter, "r") as file:
-        karakter_data = json.load(file)
-    return Character(**karakter_data)
-
-
-class Character:
-    def __init__(self, name: str, Level: int,exp :int,stat_point :int,HP: int, max_hp: int, max_sp: int, SP: int, ATK: int, ATKRATE: float, HP_reg: float, SP_reg: float, Strenght: int, Agility: int, Intelligence: int, Constitution: int):
+class State:
+    def __init__(
+        self,
+        name: str,
+        Level: int,
+        stat_point: int,
+        HP: int,
+        max_hp: int,
+        max_sp: int,
+        SP: int,
+        ATK: int,
+        ATKRATE: float,
+        HP_reg: float,
+        SP_reg: float,
+        Strength: int,
+        Agility: int,
+        Intelligence: int,
+        Constitution: int,
+    ):
         self.name = name
         self.Level = Level
-        self.exp = exp
-        self.stat_point = stat_point 
+        self.stat_point = stat_point
         self.HP = HP
         self.max_hp = max_hp
         self.max_sp = max_sp
@@ -24,104 +34,107 @@ class Character:
         self.ATKRATE = ATKRATE
         self.HP_reg = HP_reg
         self.SP_reg = SP_reg
-        self.Strenght = Strenght
+        self.Strength = Strength
         self.Agility = Agility
         self.Intelligence = Intelligence
         self.Constitution = Constitution
 
+        def __dict__(self):
+            return self.__dict__
+
+
+class Canlı:
+    def __init__(self, state: State):
+        self.state = state
+
+
+class Character(Canlı):
+    def __init__(self, state: State, exp=0):
+        self.state = state
+        self.exp = exp
+
     def get_info(self):
         return SimpleNamespace(**self.__dict__)
 
-    def __str__(self) -> str:
-        return f"{self.name}(HP={self.HP}, SP={self.SP})"
+    def karakter_read(self):
+        with open(f"{self.state.name}.json", "r") as file:
+            karakter_data = json.load(file)
+        return Character(State(**karakter_data["state"]), karakter_data["exp"])
 
-    # def getinfo(self):
-    #    return list(self.__dict__.values())
+    def karakter_write(self):
+        json_data = json.dumps(
+            {"state": self.state.__dict__, "exp": self.exp}, indent=4
+        )
+        with open(f"{self.state.name}.json", "w") as file:
+            file.write(json_data)
+
+    def __str__(self) -> str:
+        return f"{self.state.name}(HP={self.state.HP}, SP={self.state.SP})"
+
     def exp_boost(self, exp):
         self.exp = self.exp + exp
+
     def level_up(self):
-        gereken_exp = level(self.Level)
+        gereken_exp = level(self.state.Level)
         while True:
             if self.exp >= gereken_exp:
-                self.Level = self.Level + 1
+                self.state.Level = self.state.Level + 1
                 self.exp = self.exp - gereken_exp
-                self.stat_point = self.stat_point +5
+                self.state.stat_point = self.state.stat_point + 5
             else:
                 break
         self.calculate_power()
-    # for the level up
-    def update_Stat(self):
 
-        if not self.stat_point :
-            return 
-        #TODO burası yarrak gibi
-        print(f"{self.stat_point} stat puanların var.")
-        print("1 Strenght 2 Agility 3 Intelligence 4 Constituon ")
-        while self.stat_point > 0:
-            choise = input("Lütfen stat puanlarınızı dağıtınız:")
-            if choise == "1":
-                self.Strenght += 1
-            elif choise == "2":
-                self.Agility += 1
-            elif choise == "3":
-                self.Intelligence += 1
-            elif choise == "4":
-                self.Constitution += 1
+    def update_Stat(self):
+        if not self.state.stat_point:
+            return
+        # TODO burası yarrak gibi
+        print(f"{self.state.stat_point} stat puanların var.")
+        print("1 Strength 2 Agility 3 Intelligence 4 Constituon ")
+        while self.state.stat_point > 0:
+            choice = input("Lütfen stat puanlarınızı dağıtınız:")
+            if choice == "1":
+                self.state.Strength += 1
+            elif choice == "2":
+                self.state.Agility += 1
+            elif choice == "3":
+                self.state.Intelligence += 1
+            elif choice == "4":
+                self.state.Constitution += 1
             else:
                 print("Gecersiz giris")
                 continue
-            self.stat_point -= 1
+            self.state.stat_point -= 1
 
     def calculate_power(self):
-        self.HP = 100 + self.Constitution * 10
-        self.HP_reg = 5 + self.Constitution * 0.1
-        self.SP = 50 + self.Intelligence * 5
-        self.SP_reg = 2.5 + self.Intelligence * 0.05
-        self.ATK = 20 + self.Strenght * 2
-        self.ATKRATE = 1 + self.Agility * 0.05
+        self.state.HP = 100 + self.state.Constitution * 10
+        self.state.HP_reg = 5 + self.state.Constitution * 0.1
+        self.state.SP = 50 + self.state.Intelligence * 5
+        self.state.SP_reg = 2.5 + self.state.Intelligence * 0.05
+        self.state.ATK = 20 + self.state.Strength * 2
+        self.state.ATKRATE = 1 + self.state.Agility * 0.05
         # return yok
 
 
 class Warrior(Character):
-
-    # classmethod neden hepsine ihtiyaci var
-    @classmethod
-    def from_character(cls, chr: Character):
-        return cls(chr.name, chr.Level,chr.exp,chr.stat_point, chr.HP, chr.max_hp, chr.max_sp, chr.SP, chr.ATK, chr.ATKRATE, chr.HP_reg, chr.SP_reg, chr.Strenght, chr.Agility, chr.Intelligence, chr.Constitution)
-
     def heavy_strike(self):
-        if self.SP > 50 or self.SP == 50:
-            strike_damage = self.ATK * 2
-            self.SP = self.SP - 50
+        if self.state.SP > 50 or self.state.SP == 50:
+            strike_damage = self.state.ATK * 2
+            self.state.SP = self.state.SP - 50
             return strike_damage
 
-        return self.ATK
+        return self.state.ATK
 
     def vitality_boost(self):
-        hp = int(self.max_hp * 0.35 + self.HP)
-        sp = int(self.max_sp * 0.35 + self.SP)
-        self.HP = min(hp, self.max_hp)
-        self.SP = min(sp, self.max_sp)
+        hp = int(self.state.max_hp * 0.35 + self.state.HP)
+        sp = int(self.state.max_sp * 0.35 + self.state.SP)
+        self.state.HP = min(hp, self.state.max_hp)
+        self.state.SP = min(sp, self.state.max_sp)
 
-class Mob:
-    def __init__(self, name: str, Level: int, HP: int, max_hp: int, max_sp: int, SP: int, ATK: int, ATKRATE: float, HP_reg: float, SP_reg: float, Strenght: int, Agility: int, Intelligence: int, Constitution: int):
-        self.name = name
-        self.Level = Level
-        self.HP = HP
-        self.max_hp = max_hp
-        self.max_sp = max_sp
-        self.SP = SP
-        self.ATK = ATK
-        self.ATKRATE = ATKRATE
-        self.HP_reg = HP_reg
-        self.SP_reg = SP_reg
-        self.Strenght = Strenght
-        self.Agility = Agility
-        self.Intelligence = Intelligence
-        self.Constitution = Constitution
-    
-    def get_info(self):
-        return SimpleNamespace(**self.__dict__)
+
+class Mob(Canlı):
+    pass
+
 
 def create_character():
     name = input("Karakterin adını giriniz: ")
@@ -159,39 +172,51 @@ def create_character():
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
 
-    character = Character(name, current_level,exp,stat_point, HP, max_hp, max_sp, SP, ATK,
-                          ATKRATE, HP_reg, SP_reg, Strength, Agility, Intelligence, Constitution)
+    # buradaki karisikligi coz
+    character_state = State(
+        name,
+        current_level,
+        stat_point,
+        HP,
+        max_hp,
+        max_sp,
+        SP,
+        ATK,
+        ATKRATE,
+        HP_reg,
+        SP_reg,
+        Strength,
+        Agility,
+        Intelligence,
+        Constitution,
+    )
+    character = Character(character_state, exp)
 
     print("Karakter oluşturuldu:")
-    print(f"Adı: {character.name}")
-    print(f"Seviyesi: {character.Level}")
-    print(f"HP: {character.HP}")
-    print(f"SP: {character.SP}")
-    print(f"ATK: {character.ATK}")
-    print(f"ATKRATE: {character.ATKRATE}")
-    print(f"HP Regeneration: {character.HP_reg}")
-    print(f"SP Regeneration: {character.SP_reg}")
+    print(f"Adı: {character.state.name}")
+    print(f"Seviyesi: {character.state.Level}")
+    print(f"HP: {character.state.HP}")
+    print(f"SP: {character.state.SP}")
+    print(f"ATK: {character.state.ATK}")
+    print(f"ATKRATE: {character.state.ATKRATE}")
+    print(f"HP Regeneration: {character.state.HP_reg}")
+    print(f"SP Regeneration: {character.state.SP_reg}")
 
-    character_data = character.get_info()
-    return character_data
+    return character
 
-#zorluk exponanasiyel arttigi icin bu algoritma 35-40 seviye arasina kadar ise yarar.
-def level(level :int, n1 = 1.2, base_xp = 100):
+
+# zorluk exponanasiyel arttigi icin bu algoritma 35-40 seviye arasina kadar ise yarar.
+def level(level: int, n1=1.2, base_xp=100):
     n1 = n1 + (0.002) * int(level)
     gereken_exp = base_xp * (n1**level)
-    gereken_exp = round(gereken_exp /5) *5
+    gereken_exp = round(gereken_exp / 5) * 5
     return gereken_exp
 
-def mob_exp_kazancı(mob_level, n1= 1.2, base_exp= 50):
+
+def mob_exp_kazancı(mob_level, n1=1.2, base_exp=50):
     mob_exp = base_exp * (n1**mob_level)
-    mob_exp = round(mob_exp /5) *5
+    mob_exp = round(mob_exp / 5) * 5
     return mob_exp
-    
-def Karakter_write(character_data):
-    json_data = json.dumps(character_data.__dict__, indent=4)
-    file = f"{character_data.name}.json"
-    with open(file, "w") as file:
-        file.write(json_data)
 
 
 def create_giant(level):
@@ -206,10 +231,10 @@ def create_giant(level):
     while stat_point > 0:
         if stat_turn == 0:
             Strength += 1
-            stat_turn = stat_turn+2
+            stat_turn = stat_turn + 2
         else:
             Constitution += 1
-            stat_turn = stat_turn-1
+            stat_turn = stat_turn - 1
 
         stat_point -= 1
 
@@ -222,9 +247,25 @@ def create_giant(level):
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
 
-    giant = Mob(f"{current_level} Level Giant ", current_level, HP, max_hp, max_sp,
-                      SP, ATK, ATKRATE, HP_reg, SP_reg, Strength, Agility, Intelligence, Constitution)
-    #giant_data = giant.get_info()
+    giant_state = State(
+        f"{current_level} Level Giant ",
+        current_level,
+        stat_point,
+        HP,
+        max_hp,
+        max_sp,
+        SP,
+        ATK,
+        ATKRATE,
+        HP_reg,
+        SP_reg,
+        Strength,
+        Agility,
+        Intelligence,
+        Constitution,
+    )
+    giant = Mob(giant_state)
+    # giant_data = giant.get_info()
     return giant
 
 
@@ -240,13 +281,13 @@ def create_bird(level):
     while stat_point > 0:
         if stat_turn == 0:
             Constitution += 1
-            stat_turn = stat_turn+3
+            stat_turn = stat_turn + 3
         if stat_turn == 1:
             Strength += 1
-            stat_turn = stat_turn-1
+            stat_turn = stat_turn - 1
         else:
             Agility += 1
-            stat_turn = stat_turn-1
+            stat_turn = stat_turn - 1
 
         stat_point -= 1
 
@@ -259,27 +300,57 @@ def create_bird(level):
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
 
-    bird = Mob(f"{current_level} Level Bird ", current_level, HP, max_hp, max_sp,
-                     SP, ATK, ATKRATE, HP_reg, SP_reg, Strength, Agility, Intelligence, Constitution)
+    bird_state = State(
+        f"{current_level} Level Bird ",
+        current_level,
+        stat_point,
+        HP,
+        max_hp,
+        max_sp,
+        SP,
+        ATK,
+        ATKRATE,
+        HP_reg,
+        SP_reg,
+        Strength,
+        Agility,
+        Intelligence,
+        Constitution,
+    )
 
-    #bird_data = bird.get_info()
+    bird = Mob(bird_state)
+
+    # bird_data = bird.get_info()
     return bird
 
 
 def random_mob(kat):
     random_number = random.random()
-    begin = 1 + (3 * (kat-1))
-    end = 3 * kat 
-    random_level = random.randint(begin,end)
+    begin = 1 + (3 * (kat - 1))
+    end = 3 * kat
+    random_level = random.randint(begin, end)
     if random_number <= 0.5:
         return create_giant(random_level)
     else:
         return create_bird(random_level)
 
 
+def clear_console():
+    os.system("cls" if os.name == "nt" else "clear")
 
-'''
 
-#stat point basarısız gırıs ıcın contınue koyduk 12-07-2023
-
-'''
+def check_in(kontrol):
+    if kontrol == "0":
+        check = input("Önceki Dosyalara Erişmek için S ye basın.")
+        if check.lower() == "s":
+            dosya_adi = input("Karakterin adını girin.")
+            with open(f"{dosya_adi}.json", "r") as file:
+                character_data = json.load(file)
+            return Character(State(**character_data["state"]), character_data["exp"])
+        else:
+            your_character = create_character()
+            return your_character
+    else:
+        with open(f"Messi.json", "r") as file:
+            character_data = json.load(file)
+        return Character(State(**character_data["state"]), character_data["exp"])

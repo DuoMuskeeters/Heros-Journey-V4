@@ -1,5 +1,4 @@
 from Savas_Mekanigi import *
-from Ekran import *
 
 def rounding(sayi):
     if isinstance(sayi , int):
