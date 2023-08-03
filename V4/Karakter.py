@@ -248,7 +248,7 @@ def create_giant(level):
     ATKRATE = 1 + Agility * 0.05
 
     giant_state = State(
-        f"{current_level} Level Giant ",
+        name,
         current_level,
         stat_point,
         HP,
