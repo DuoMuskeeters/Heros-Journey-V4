@@ -137,7 +137,24 @@ class Warrior(Character):
 
 
 class Mob(Canlı):
-    pass
+    def skill_barı(self):
+        SP_reg = int(self.state.max_sp * self.state.SP_reg/100)
+        self.state.SP = self.state.SP + SP_reg 
+        if self.state.SP >= self.state.max_sp:
+            self.state.SP = self.state.SP - self.state.max_sp
+            return True
+        else:
+            return False
+class giant(Mob):
+    def giant_skill(self):
+        self.state.HP = int(min(self.state.max_hp, self.state.HP * 1.55))
+        self.state.HP_reg = self.state.HP_reg * 2
+        print(f"{self.state.name} ın ofkesini hissediyorsun.\n{self.state.name}ın can ve can yenılenmesı arttı.")
+class bird(Mob):    
+    def bird_skill(self):
+        self.state.Agility = int(self.state.Agility * 1.5)
+        self.state.ATK = int(self.state.ATK * 1.5)
+        print(f"{self.state.name} ın gıderek agresıfleşiyor.\n{self.state.name}ın saldırı hızı ve gucu arttı.")
 
 
 def create_character():
@@ -150,23 +167,6 @@ def create_character():
     Intelligence = 10
     Constitution = 10
 
-    # stat_point = int(current_level - 0) * 5
-    # print("1 Strenght 2 Agility 3 Intelligence 4 Constituon ")
-    # while stat_point > 0:
-    #     choise = int(input("Lütfen stat puanlarınızı dağıtınız:"))
-    #     if choise == 1:
-    #         Strength += 1
-    #     elif choise == 2:
-    #         Agility += 1
-    #     elif choise == 3:
-    #         Intelligence += 1
-    #     elif choise == 4:
-    #         Constitution += 1
-    #     else:
-    #         print("Gecersiz giris")
-    #         continue
-    #     stat_point -= 1
-
     HP = 100 + Constitution * 10
     max_hp = HP
     HP_reg = 5 + Constitution * 0.1
@@ -178,7 +178,7 @@ def create_character():
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
 
-    # buradaki karisikligi coz
+
     character_state = State(
         name,
         current_level,
@@ -232,7 +232,7 @@ def create_giant(level):
     current_level = int(level)
     Strength = 10
     Agility = 2
-    Intelligence = 5
+    Intelligence = 10
     Constitution = 20
 
     stat_point = int(current_level) * 5
@@ -251,13 +251,12 @@ def create_giant(level):
     max_hp = HP
     HP_reg = 5 + Constitution * 0.1
     Armor = Constitution / (Constitution + 100)
-    SP = 50 + Intelligence * 5
-    max_sp = SP
-    SP_reg = 2.5 + Intelligence * 0.05
+    max_sp = int(150 - Intelligence * 0.5)
+    SP = 0
+    SP_reg = 10 + Intelligence * 0.5
     m_resist = Constitution / (Constitution + 100)
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
-
 
     giant_state = State(
         f"{current_level} Level Giant ",
@@ -278,16 +277,16 @@ def create_giant(level):
         Intelligence,
         Constitution,
     )
-    giant = Mob(giant_state)
+    giant_data = giant(giant_state)
     # giant_data = giant.get_info()
-    return giant
+    return giant_data
 
 
 def create_bird(level):
     current_level = int(level)
     Strength = 5
     Agility = 20
-    Intelligence = 5
+    Intelligence = 10
     Constitution = 5
 
     stat_point = int(current_level) * 5
@@ -309,13 +308,12 @@ def create_bird(level):
     max_hp = HP
     HP_reg = 5 + Constitution * 0.1
     Armor = Constitution / (Constitution + 100)
-    SP = 50 + Intelligence * 5
-    max_sp = SP
-    SP_reg = 2.5 + Intelligence * 0.05
+    max_sp = int(150 - Intelligence * 0.5)
+    SP = 0
+    SP_reg = 10 + Intelligence * 0.5
     m_resist = Constitution / (Constitution + 100)
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
-
 
     bird_state = State(
         f"{current_level} Level Bird ",
@@ -337,10 +335,10 @@ def create_bird(level):
         Constitution,
     )
 
-    bird = Mob(bird_state)
+    bird_data = bird(bird_state)
 
     # bird_data = bird.get_info()
-    return bird
+    return bird_data
 
 
 def random_mob(kat):

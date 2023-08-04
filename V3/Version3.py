@@ -23,7 +23,7 @@ class Warrior(Character):
     def heavy_strike(self):
         if self.SP > 50 or self.SP == 50:
             strike_damage = self.ATK * 2    
-            self.SP = self.SP - 50
+            self.SP = self.SP - 150
             return strike_damage
 
         return self.ATK 

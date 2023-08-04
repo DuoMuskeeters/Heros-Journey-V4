@@ -45,6 +45,14 @@ def Savas_Mekanigi(karakter: Canlı, mob: Canlı):
         dodge_rate = dodge(defender.state.ATKRATE, attacker.state.ATKRATE)
         HP_reg = int(attacker.state.HP_reg * attacker.state.HP) / 100
         SP_reg = int(attacker.state.SP_reg * attacker.state.SP) / 100
+        if isinstance(attacker , Mob):
+            sonuc= Mob.skill_barı(attacker)
+            if sonuc == True:
+                if isinstance(attacker, giant):
+                    giant.giant_skill(attacker)
+                if isinstance(attacker, bird):
+                    bird.bird_skill(attacker)
+
         if dodge_rate >= random.random():
             print(
                 f"{attacker.state.name} saldırısı {defender.state.name} tarafından dodgelandı. "
