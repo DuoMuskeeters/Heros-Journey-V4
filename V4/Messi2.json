@@ -1,0 +1,22 @@
+{
+    "state": {
+        "name": "Messi2",
+        "Level": 1,
+        "stat_point": 0,
+        "HP": 250,
+        "max_hp": 200,
+        "max_sp": 100,
+        "SP": 100,
+        "ATK": 40,
+        "ATKRATE": 1.5,
+        "HP_reg": 6.5,
+        "Armor": 0.09090909090909091,
+        "SP_reg": 3.0,
+        "m_resist": 0.09090909090909091,
+        "Strength": 10,
+        "Agility": 10,
+        "Intelligence": 10,
+        "Constitution": 15
+    },
+    "exp": 60
+}

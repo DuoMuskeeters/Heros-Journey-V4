@@ -17,7 +17,9 @@ class State:
         ATK: int,
         ATKRATE: float,
         HP_reg: float,
+        Armor: float,
         SP_reg: float,
+        m_resist: float,
         Strength: int,
         Agility: int,
         Intelligence: int,
@@ -33,7 +35,9 @@ class State:
         self.ATK = ATK
         self.ATKRATE = ATKRATE
         self.HP_reg = HP_reg
+        self.Armor = Armor
         self.SP_reg = SP_reg
+        self.m_resist = m_resist
         self.Strength = Strength
         self.Agility = Agility
         self.Intelligence = Intelligence
@@ -166,9 +170,11 @@ def create_character():
     HP = 100 + Constitution * 10
     max_hp = HP
     HP_reg = 5 + Constitution * 0.1
+    Armor = Constitution / (Constitution + 100)
     SP = 50 + Intelligence * 5
     max_sp = SP
     SP_reg = 2.5 + Intelligence * 0.05
+    m_resist = Constitution / (Constitution + 100)
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
 
@@ -184,7 +190,9 @@ def create_character():
         ATK,
         ATKRATE,
         HP_reg,
+        Armor,
         SP_reg,
+        m_resist,
         Strength,
         Agility,
         Intelligence,
@@ -202,6 +210,7 @@ def create_character():
     print(f"HP Regeneration: {character.state.HP_reg}")
     print(f"SP Regeneration: {character.state.SP_reg}")
 
+    character.karakter_write()
     return character
 
 
@@ -241,14 +250,17 @@ def create_giant(level):
     HP = 100 + Constitution * 10
     max_hp = HP
     HP_reg = 5 + Constitution * 0.1
+    Armor = Constitution / (Constitution + 100)
     SP = 50 + Intelligence * 5
     max_sp = SP
     SP_reg = 2.5 + Intelligence * 0.05
+    m_resist = Constitution / (Constitution + 100)
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
 
+
     giant_state = State(
-        name,
+        f"{current_level} Level Giant ",
         current_level,
         stat_point,
         HP,
@@ -258,7 +270,9 @@ def create_giant(level):
         ATK,
         ATKRATE,
         HP_reg,
+        Armor,
         SP_reg,
+        m_resist,
         Strength,
         Agility,
         Intelligence,
@@ -294,11 +308,14 @@ def create_bird(level):
     HP = 100 + Constitution * 10
     max_hp = HP
     HP_reg = 5 + Constitution * 0.1
+    Armor = Constitution / (Constitution + 100)
     SP = 50 + Intelligence * 5
     max_sp = SP
     SP_reg = 2.5 + Intelligence * 0.05
+    m_resist = Constitution / (Constitution + 100)
     ATK = 20 + Strength * 2
     ATKRATE = 1 + Agility * 0.05
+
 
     bird_state = State(
         f"{current_level} Level Bird ",
@@ -311,7 +328,9 @@ def create_bird(level):
         ATK,
         ATKRATE,
         HP_reg,
+        Armor,
         SP_reg,
+        m_resist,
         Strength,
         Agility,
         Intelligence,
@@ -351,6 +370,6 @@ def check_in(kontrol):
             your_character = create_character()
             return your_character
     else:
-        with open(f"Messi.json", "r") as file:
+        with open(f"Messi2.json", "r") as file:
             character_data = json.load(file)
         return Character(State(**character_data["state"]), character_data["exp"])

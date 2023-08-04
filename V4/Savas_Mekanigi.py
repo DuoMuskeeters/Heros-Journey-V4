@@ -51,10 +51,14 @@ def Savas_Mekanigi(karakter: Canlı, mob: Canlı):
             )
         else:
             damage = warrior(attacker)
+            damage = int(damage * (1-defender.state.Armor))
+            Blok = int(damage * (defender.state.Armor))
             if damage != 0:
-                defender.state.HP = max(0, defender.state.HP - damage)
+                defender.state.HP = max(
+                    0, int(defender.state.HP - damage)
+                )
                 print(
-                    f"{attacker.state.name} {defender.state.name}a {damage} hasar verdi"
+                    f"{attacker.state.name} {defender.state.name}a {damage}(Blok ({Blok})) hasar verdi"
                 )
                 print(f"{defender.state.name} canı {defender.state.HP} ")
                 attacker.state.HP = min(
